@@ -22,8 +22,9 @@ if(file_addr < 0){
 printf("File mapped at address: %p\n",(void*)file_addr);
 printf("Printing mpih_sqr_n_basecase.....\n");
 //char * sqr = file_addr + 98070;
-int i = 0x98070;
-while ( i<0x9831f){
+// 000000000009f390
+int i = 0x9f390;
+while ( i<0x9f4bb){
     printf("%hhx %hhx %hhx %hhx\n", file_addr[i], file_addr[i+1],file_addr[i+2],file_addr[i+3]);
     i+=4;
 }
