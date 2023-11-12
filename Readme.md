@@ -29,6 +29,6 @@ Download GPG
     ./configure
     make
     sudo make install
-
-# References
+# Worth Noting
+There is a pattern in the spy output that shows a block of 1/0s followed by a continous block of 0s followed by a block of 1/0s. I speculate that this is in the time window where gpg is switching from d_p/d_q:
 
