@@ -8,7 +8,7 @@
 int main(void){
 char* a;
 int fp = open("/usr/local/bin/gpg", O_RDONLY);
- struct stat statbuf;
+struct stat statbuf;
 if (fstat (fp,&statbuf) < 0)
    {printf ("fstat error");
     return 0;
