@@ -60,7 +60,7 @@ int main(void){
    int mul_addr = 0x9fd80;
    int divrem_addr = 0x9e57c;
    
-   for(int i=0; i<5000; i++){
+   for(;;){
        int sqr = probe(file_addr + sqr_addr);
        int mul = probe(file_addr + mul_addr);
        int divrem = probe(file_addr + mul_addr);
