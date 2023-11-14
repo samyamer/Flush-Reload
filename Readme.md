@@ -44,7 +44,7 @@ GnuPG compiles with the -02 flags, which shuffles things a bit on compilation. S
 Probably the least documented aspect of this attack. How many cycles should the attacker wait before it reloads? If it does not wait long enough it will mostly miss. If it waits too long it will mostly hit. Through trial and error I found that 400 iterations of a nop was the best.
 
 # References
-[1] Yarom, Y., & Falkner, K. (2014). {FLUSH+ RELOAD}: A high resolution, low noise, l3 cache {Side-Channel} attack. In 23rd USENIX security symposium (USENIX security 14) (pp. 719-732) \n
+[1] Yarom, Y., & Falkner, K. (2014). {FLUSH+ RELOAD}: A high resolution, low noise, l3 cache {Side-Channel} attack. In 23rd USENIX security symposium (USENIX security 14) (pp. 719-732)  
 [2] Ge, Daniel, & Mally, David, & Meyer, Nicholar.PLUNGER: Reproducing FLUSH+RELOAD: A High-Resolution, Low-Latency Side Channel Attack On GnuPG[https://github.com/DanGe42/flush-reload/releases/tag/cis-700-submission]
 # GPG Code Branching on Secret
 ![alt text](https://github.com/samyamer/Flush-Reload/blob/master/GPG-Code.png)
