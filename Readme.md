@@ -17,7 +17,7 @@ There are (m-n+1) n-long substrings (sliding window of size n). This means that 
 The probability of an n-long substring is 2^{-n}. We can model the probability of a spy having at least 1 success (a single common substring of size n) as a binomial distribution with a probability of success being 2^-n and (m-n+1) trials.
 
 Let X denote the number of successes. Let F denote P(X>=1).F essentialy denotes the probability of a spy being a fluke.
-$F=P(X>=1) = 1 - P(X=0) = 1-(1-2^{-n})^{(m-n+1)}
+$F=P(X>=1) = 1 - P(X=0) = 1-(1-2^{-n})^{(m-n+1)}$
 
 This means that the probability of an n-long substring occuring in an m-long string is 1-(1-2^-n)\*\*(m-n+1)
 
