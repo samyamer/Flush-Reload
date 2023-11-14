@@ -41,7 +41,7 @@ The threshold for HIT/MISS is system dependent so we need to calibrate. I used t
 GnuPG compiles with the -02 flags, which shuffles things a bit on compilation. So I had to inspect the objdump of the excutable to fidn the functions I needed. I probed addresses right before the return instructions in the following functions: mpih_sqr_n_basecase, mpihelp_divrem,mpihelp_mul_karatsuba_case. (See screenshot of gpp code below).
 
 # Busy Wait Cycles
-Probably the least documented aspect of this attack. How many cycles should the attacker wait before it reloads? If it does not wait long enough it will mostly miss. If it waits too long it will mostly hit. Through trial and error I found that 400 iterations of a nop was the best.
+Probably the least documented aspect of this attack. How many cycles should the attacker wait before it reloads? If it does not wait long enough it will mostly miss. If it waits too long it will mostly hit. Through trial and error I found that 4000 iterations of a nop was the best.
 
 # References
 [1] Yarom, Y., & Falkner, K. (2014). {FLUSH+ RELOAD}: A high resolution, low noise, l3 cache {Side-Channel} attack. In 23rd USENIX security symposium (USENIX security 14) (pp. 719-732)  
