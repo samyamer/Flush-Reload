@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-unsigned int THRESHOLD = 300;
+unsigned int THRESHOLD = 265;
 
 int probe(char* addr){
     volatile unsigned int time;
