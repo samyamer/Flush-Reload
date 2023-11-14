@@ -42,7 +42,7 @@ int probe(char* addr){
     return time < THRESHOLD;
 }
 void busy_wait(){
-    for(int i =0; i<6000; i++){
+    for(int i =0; i<7000; i++){
          asm __volatile__(
         "nop\n\t"
         );
