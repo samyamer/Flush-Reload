@@ -1,39 +1,15 @@
 # Replication of Flush+Reload
 
-# Takeaways from paper
-    - Don't forget to serialize instructions
-    - Long keys are easier
-    - Use mmap to share the binary with the process (GnuGPG)
-    - Need to serialize instructions
 
-
-# Calibration of threshold
-
-The threshold for HIT/MISS is system dependent so we need to calibrate. I used the THIS repo [link]
-
-The way it works is by counting the nunber of times a HIT/MISS took x cycles. The threshold is somewhere between the maximum time it took for a hit and the minimum time it took for a miss. As long as the difference is big we are in the clear.
-
-Looking at the historgam data I can see that there are no misses that take less than 3 digit cycles, while the fastest hit took 56 cycles. Looking at the distribution we can determine a reasonable threshold.
-
-# Finding addresses to probe
-GnuPG compiles with the -02 flags, which shuffles things a bit on compilation. So I had to inspect the objdump of the excutable to fidn the functions I needed. The offsets that appear in the objdump have an extra 0x100000000 (due to VM stuff), so to get the offset from the pointer mmap returns I subtract 0x100000000 from the offset in the objdump. I confirm the address is correct by printing the bytes and comparing with the objdump.
-
-
-# Setup
-Must use gcc <10 make will error
-Download GPG
-    wget https://gnupg.org/ftp/gcrypt/gnupg/gnupg-1.4.13.tar.gz
-
-    tar -xvf gnupg-1.4.13.tar.gz
-    cd gnupg-1.4.13
-    ./configure
-    make
-    sudo make install
-# Worth Noting
-There is a pattern in the spy output that shows a block of 1/0s followed by a continous block of 0s followed by a block of 1/0s. I speculate that this is in the time window where gpg is switching from d_p/d_q:
+# Results
+I measured success using the length of the longest common substring(LCS) bewteen the spy's output and d_p/d_q. I also calculate the probability of getting this LCS by pure luck.
+The best result I was able to achieve is a LCS of length 29 with d_q, with a probability of being pure luck of $9.26\*10^{-6}$. GPG signature was doing signatures in a loop in the background, so it is likely that the spy witnessed multiple signatures.
+See next section for details.
 
 # Validation of Attack
-Here I present this question, how many bits of d_p/d_q should the spy retrieve to prove that it wasn't a fluke? After all, if it outputs all 0s then it will have a common substring with d_p/d_q of at least length 1.
+Here I find a way to calculate the probability that the spy's output was just a lucky guess.
+
+How many bits of d_p/d_q should the spy retrieve to prove that it wasn't a fluke? After all, if it outputs all 0s then it will have a common substring with d_p/d_q of at least length 1. I formulate this problem as a binomial distribution.
 
 In a string of m randomly generated 1s and 0 (spy output), what is the probability of occurence of an n-long substring (longest common substring between spy and d_p/d_q)?
 
@@ -41,9 +17,32 @@ There are (m-n+1) n-long substrings (sliding window of size n). This means that 
 The probability of an n-long substring is 2^{-n}. We can model the probability of a spy having at least 1 success (a single common substring of size n) as a binomial distribution with a probability of success being 2^-n and (m-n+1) trials.
 
 Let X denote the number of successes. Let F denote P(X>=1).F essentialy denotes the probability of a spy being a fluke.
-F=P(X>=1) = 1 - P(X=0) = 1-(1-2^-n)\*\*(m-n+1)
+$F=P(X>=1) = 1 - P(X=0) = 1-(1-2^{-n})^{(m-n+1)}
 
 This means that the probability of an n-long substring occuring in an m-long string is 1-(1-2^-n)\*\*(m-n+1)
 
 A perfect spy outputs the exact length of d_p or d_q with all the correct bits. n is equal to the length of d_p/d_q, since this is the longest common substring between the spy's output and d_p/d_q. Therefore m and n are equal, hence,
-F = 1-(1^2-n) =2^-n, where n is the length of d_p/d_q. Since d_p/d_q has a length of 4095, F =  2^-4095 for this perfect spy.
+F = 1-(1^2-n) =2^-n, where n is the length of d_p/d_q. Since d_p/d_q has a length of 4095, $F =  2^{-4095}$ for this perfect spy.
+
+In the result I obtained the spy had an output of 5000 bits and a LCS of length 29, which means $F = 9.26\*10^{-6}$.
+
+# Sanity Checks
+To make sure I wasn't just seeing things I did two sanity checks.
+1. Spy running without any GPG signatures running --> output was all 0s as expected
+2. Looked at hit times to make sure these weren't just values on the border of the threshold --> Hit times observed were less than 150.
+
+# Calibration of threshold
+I ran the attack on an Intel i3-4005U CPU, which is an Ivy Bridge architecture.
+
+The threshold for HIT/MISS is system dependent so we need to calibrate. I used the this(https://github.com/IAIK/flush_flush). The way it works is by counting the nunber of times a HIT/MISS took x cycles. Looking at the time distribution of hits I chose 200 cycles as the threshold.
+
+
+# Finding addresses to probe
+GnuPG compiles with the -02 flags, which shuffles things a bit on compilation. So I had to inspect the objdump of the excutable to fidn the functions I needed. I probed addresses right before the return instructions in the following functions: mpih_sqr_n_basecase, mpihelp_divrem,mpihelp_mul_karatsuba_case. (See screenshot of gpp code below).
+
+# Busy Wait Cycles
+Probably the least documented aspect of this attack. How many cycles should the attacker wait before it reloads? If it does not wait long enough it will mostly miss. If it waits too long it will mostly hit. Through trial and error I found that 400 iterations of a nop was the best.
+
+# GPG Code Branching on Secret
+
+
