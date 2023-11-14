@@ -14,15 +14,15 @@ How many bits of d_p/d_q should the spy retrieve to prove that it wasn't a fluke
 In a string of m randomly generated 1s and 0 (spy output), what is the probability of occurence of an n-long substring (longest common substring between spy and d_p/d_q)?
 
 There are (m-n+1) n-long substrings (sliding window of size n). This means that there are (m-n+1) trials. For simplicity, I assume the trials are independent, which they are not, since there is overlap. However, this assumption leads to an overestimation of the probability, which is good in our scenario.
-The probability of an n-long substring is 2^{-n}. We can model the probability of a spy having at least 1 success (a single common substring of size n) as a binomial distribution with a probability of success being 2^-n and (m-n+1) trials.
+The probability of an n-long substring is $2^{-n}$. We can model the probability of a spy having at least 1 success (a single common substring of size n) as a binomial distribution with a probability of success being $2^-n$ and (m-n+1) trials.
 
 Let X denote the number of successes. Let F denote P(X>=1).F essentialy denotes the probability of a spy being a fluke.
 $F=P(X>=1) = 1 - P(X=0) = 1-(1-2^{-n})^{(m-n+1)}$
 
-This means that the probability of an n-long substring occuring in an m-long string is 1-(1-2^-n)\*\*(m-n+1)
+This means that the probability of an n-long substring randomly occuring in an m-long string is $1-(1-2^-n)\*\*(m-n+1)$
 
 A perfect spy outputs the exact length of d_p or d_q with all the correct bits. n is equal to the length of d_p/d_q, since this is the longest common substring between the spy's output and d_p/d_q. Therefore m and n are equal, hence,
-F = 1-(1^2-n) =2^-n, where n is the length of d_p/d_q. Since d_p/d_q has a length of 4095, $F =  2^{-4095}$ for this perfect spy.
+$F = 1-(1-2^{-n}) =2^{-n}$, where n is the length of d_p/d_q. Since d_p/d_q has a length of 4095, $F =  2^{-4095}$ for this perfect spy.
 
 In the result I obtained the spy had an output of 5000 bits and a LCS of length 29, which means $F = 9.26\*10^{-6}$.
 
@@ -44,5 +44,5 @@ GnuPG compiles with the -02 flags, which shuffles things a bit on compilation. S
 Probably the least documented aspect of this attack. How many cycles should the attacker wait before it reloads? If it does not wait long enough it will mostly miss. If it waits too long it will mostly hit. Through trial and error I found that 400 iterations of a nop was the best.
 
 # GPG Code Branching on Secret
-
+![alt text](https://github.com/samyamer/Flush-Reload/blob/master/GPG-Code.png)
 
