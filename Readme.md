@@ -16,7 +16,7 @@ In a string of m randomly generated 1s and 0 (spy output), what is the probabili
 There are (m-n+1) n-long substrings (sliding window of size n). This means that there are (m-n+1) trials. For simplicity, I assume the trials are independent, which they are not, since there is overlap. However, this assumption leads to an overestimation of the probability, which is good in our scenario.
 The probability of an n-long substring is $2^{-n}$. We can model the probability of a spy having at least 1 success (a single common substring of size n) as a binomial distribution with a probability of success being $2^{-n}$ and (m-n+1) trials.
 
-Let X denote the number of successes. Let F denote P(X>=1).F essentialy denotes the probability of a spy being a fluke.
+Let X denote the number of successes. Let F = P(X>=1).F essentialy denotes the probability of a spy being a fluke.
 $F=P(X>=1) = 1 - P(X=0) = 1-(1-2^{-n})^{(m-n+1)}$
 
 This means that the probability of an n-long substring randomly occuring in an m-long string is $1-(1-2^-n)\*\*(m-n+1)$
