@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-unsigned int THRESHOLD = 190;
+unsigned int THRESHOLD = 200;
 
 int probe(char* addr){
     volatile unsigned int time;
@@ -31,14 +31,7 @@ int probe(char* addr){
         :"edi","edx"
        
     );
-    //if(time<150){
-    	//printf("hit\n");
-    //	printf("time: %u\n",time);
-    //}
-   // printf("time: %u\n",time);
-
-    
-
+   
     return time < THRESHOLD;
 }
 void busy_wait(){
