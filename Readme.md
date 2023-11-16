@@ -3,7 +3,7 @@
 
 # Results
 I measured success using the length of the longest common substring(LCS) bewteen the spy's output and d_p/d_q. I also calculate the probability of getting this LCS by pure luck.
-The best result I was able to achieve is a LCS of length 29 with d_q, with a probability of being pure luck of $9.26\*10^{-6}$. GPG signature was doing signatures in a loop in the background, so it is likely that the spy witnessed multiple signatures.
+The best result I was able to achieve is a LCS of length 27 with d_p, with a probability of being pure luck of $3.7\*10^{-5}$. GPG signature was doing signatures in a loop in the background, so it is likely that the spy witnessed multiple signatures.
 See next section for details.
 
 # Validation of Attack
@@ -22,9 +22,9 @@ $F=P(X>=1) = 1 - P(X=0) = 1-(1-2^{-n})^{(m-n+1)}$
 This means that the probability of an n-long substring randomly occuring in an m-long string is $1-(1-2^-n)\*\*(m-n+1)$
 
 A perfect spy outputs the exact length of d_p or d_q with all the correct bits. n is equal to the length of d_p/d_q, since this is the longest common substring between the spy's output and d_p/d_q. Therefore m and n are equal, hence,
-$F = 1-(1-2^{-n}) =2^{-n}$, where n is the length of d_p/d_q. Since d_p/d_q has a length of 4095, $F =  2^{-4095}$ for this perfect spy.
+$F = 1-(1-2^{-n}) =2^{-n}$, where n is the length of d_p/d_q. Since d_p/d_q has a length of 2046, $F =  2^{-2046}$ for this perfect spy.
 
-In the result I obtained the spy had an output of 5000 bits and a LCS of length 29, which means $F = 9.26\*10^{-6}$.
+In the result I obtained the spy had an output of 5000 bits and a LCS of length 27, which means $F = 3.7\*10^{-5}$.
 
 # Sanity Checks
 To make sure I wasn't just seeing things I did two sanity checks.
@@ -41,10 +41,10 @@ The threshold for HIT/MISS is system dependent so we need to calibrate. I used t
 GnuPG compiles with the -02 flags, which shuffles things a bit on compilation. So I had to inspect the objdump of the excutable to fidn the functions I needed. I probed addresses right before the return instructions in the following functions: mpih_sqr_n_basecase, mpihelp_divrem,mpihelp_mul_karatsuba_case. (See screenshot of gpp code below).
 
 # Busy Wait Cycles
-Probably the least documented aspect of this attack. How many cycles should the attacker wait before it reloads? If it does not wait long enough it will mostly miss. If it waits too long it will mostly hit. Through trial and error I found that 4000 iterations of a nop was the best.
+Probably the least documented aspect of this attack. How many cycles should the attacker wait before it reloads? If it does not wait long enough it will mostly miss. If it waits too long it will mostly hit. Through trial and error I found that around 50,000 iterations of a nop was the best.
 
 # References
-[1] Yarom, Y., & Falkner, K. (2014). {FLUSH+ RELOAD}: A high resolution, low noise, l3 cache {Side-Channel} attack. In 23rd USENIX security symposium (USENIX security 14) (pp. 719-732)  
+[1] Yarom, Y., & Falkner, K. (2014). {FLUSH+ RELOAD}: A high resolution, low noise, l3 cache {Side-Channel} attack. In 23rd USENIX security symposium (USENIX security 14) (pp. 719-732)
 [2] Ge, Daniel, & Mally, David, & Meyer, Nicholar.PLUNGER: Reproducing FLUSH+RELOAD: A High-Resolution, Low-Latency Side Channel Attack On GnuPG[https://github.com/DanGe42/flush-reload/releases/tag/cis-700-submission]
 # GPG Code Branching on Secret
 ![alt text](https://github.com/samyamer/Flush-Reload/blob/master/GPG-Code.png)
