@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-unsigned int THRESHOLD = 200;
+unsigned int THRESHOLD = 265;
 
 int probe(char* addr){
     volatile unsigned int time;
@@ -35,7 +35,7 @@ int probe(char* addr){
     return time < THRESHOLD;
 }
 void busy_wait(){
-    for(int i =0; i<30000; i++){
+    for(int i =0; i<50000; i++){
          asm __volatile__(
         "nop\n\t"
         );
