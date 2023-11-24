@@ -2,3 +2,4 @@
 *.sig
 *.o
 env/
+.DS_Store

