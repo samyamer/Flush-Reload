@@ -122,11 +122,11 @@ def _to_binary(time_slots):
     return output
 
 
-access_list = read_file("slots_out1.txt")
+access_list = read_file("slots_out4.txt")
 
 out = _to_binary(access_list)
 
-#print(_to_binary(read_file("slots_out1.txt")))
+#print(_to_binary(read_file("slots_out3.txt")))
 
 
 

@@ -109,14 +109,14 @@ int main(void){
    diff = second -first;
    printf("wait %lu\n",diff);
 */
-   for(int i=0;i< 20000;i++){
+   for(int i=0;i< 50000;i++){
        int sqr = probe(file_addr + sqr_addr);
        int mul = probe(file_addr + mul_addr);
        int divrem = probe(file_addr + divrem_addr);
 
        printf("%d,%d,%d\n",sqr,mul,divrem);
        // busy wait
-       for(int i=0;i<100;i++){nop();}
+       for(int i=0;i<10;i++){nop();}
 
 
    }
