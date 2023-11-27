@@ -3,3 +3,4 @@
 *.o
 env/
 .DS_Store
+debug.txt
