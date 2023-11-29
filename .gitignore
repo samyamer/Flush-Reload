@@ -3,4 +3,5 @@
 *.o
 env/
 .DS_Store
-debug.txt
+debug.tx
+test_taskset*
