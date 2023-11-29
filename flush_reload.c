@@ -114,10 +114,9 @@ int main(void){
    for(int i=0;i< 50000;i++){
        int sqr = probe(file_addr + sqr_addr);
        int mul = probe(file_addr + mul_addr);
-       int other_mul = probe(file_addr+ other_mul);
        int divrem = probe(file_addr + divrem_addr);
 
-       printf("%d,%d,%d,%d\n",sqr,mul,other_mul,divrem);
+       printf("%d,%d,%d\n",sqr,mul,divrem);
        // busy wait
        for(int i=0;i<50;i++){nop();}
 
