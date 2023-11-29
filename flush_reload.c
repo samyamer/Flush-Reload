@@ -116,7 +116,7 @@ int main(void){
 
        printf("%d,%d,%d\n",sqr,mul,divrem);
        // busy wait
-       for(int i=0;i<10;i++){nop();}
+       for(int i=0;i<50;i++){nop();}
 
 
    }
