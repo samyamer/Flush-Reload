@@ -97,6 +97,15 @@ def _to_binary(time_slots):
                 num_mul=0
                 all_miss=0
         elif current_state == AFTER_SQUARE_MOD:
+            if(all_miss > 3 and num_div > 20):
+                output.append('?')
+                current_state = START
+                num_square=0
+                num_div=0
+                num_mul=0
+                slots.append((start,end,"?"))
+                start = end+1
+                all_miss=0
             if(num_mul > 0):
                 current_state = AFTER_MULTIPLY
                 num_square=0
@@ -131,6 +140,7 @@ def _to_binary(time_slots):
                 num_mul=0
                 slots.append((start,end,"?"))
                 start = end+1
+                all_miss=0
             if(num_div > 2):
                 output.append('1')
                 current_state = START
@@ -139,6 +149,7 @@ def _to_binary(time_slots):
                 num_mul=0
                 slots.append((start,end,1))
                 start = end+1
+                all_miss=0
         end+=1
 
     return output,slots
