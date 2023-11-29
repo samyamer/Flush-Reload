@@ -88,11 +88,13 @@ int main(void){
    int sqr_addr= 0x9f44c;
    int mul_addr = 0x9fd80;
    int divrem_addr = 0x9e57c;
+   int other_mul = 0x9fa57;
 
 /*
   u_int64_t first = time();
    int sqr = probe(file_addr + sqr_addr);
    int mul = probe(file_addr + mul_addr);
+   int other_mul = probe(file_addr+ other_mul);
    int divrem = probe(file_addr + divrem_addr);
    u_int64_t second = time();
    u_int64_t diff = second -first;
@@ -112,9 +114,10 @@ int main(void){
    for(int i=0;i< 50000;i++){
        int sqr = probe(file_addr + sqr_addr);
        int mul = probe(file_addr + mul_addr);
+       int other_mul = probe(file_addr+ other_mul);
        int divrem = probe(file_addr + divrem_addr);
 
-       printf("%d,%d,%d\n",sqr,mul,divrem);
+       printf("%d,%d,%d,%d\n",sqr,mul,other_mul,divrem);
        // busy wait
        for(int i=0;i<50;i++){nop();}
 
