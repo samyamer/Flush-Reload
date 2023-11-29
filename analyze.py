@@ -58,10 +58,10 @@ def _to_binary(time_slots):
             all_miss+=1
             total_all_miss +=1
             empty = True
-        else:
-            all_miss = 0
+        # else:
+            # all_miss = 0
 
-        if(all_miss >=10):
+        if(all_miss >=20):
             output.append("?")
             current_state = START
             slots.append((start,end,"?"))
@@ -77,22 +77,32 @@ def _to_binary(time_slots):
                 num_div=0
                 num_mul=0
         elif current_state == AFTER_SQUARE:
+            # if(num_mul>0 and all_miss > 3):
+            #     current_state = AFTER_MULTIPLY
+            #     num_square=0
+            #     num_div=0
+            #     num_mul=0
+            #     all_miss = 0
+
             if(num_div>=3 and num_mul==0):
                 current_state = AFTER_SQUARE_MOD
                 num_square=0
                 num_div=0
                 num_mul=0
+                all_miss=0
             elif(num_div>0 and num_mul > 0 and all_miss<5):
                 current_state = AFTER_MULTIPLY
                 num_square=0
                 num_div=0
                 num_mul=0
+                all_miss=0
         elif current_state == AFTER_SQUARE_MOD:
             if(num_mul > 0):
                 current_state = AFTER_MULTIPLY
                 num_square=0
                 num_div=0
                 num_mul=0
+                all_miss = 0
             # elif(num_square > 3 and num_div==0 and num_mul==0):
             #     output.append('0')
             #     current_state = AFTER_SQUARE
@@ -109,6 +119,8 @@ def _to_binary(time_slots):
                 num_mul=0
                 slots.append((start,end,0))
                 start = end+1
+
+
 
         elif current_state == AFTER_MULTIPLY:
             if(num_square > 1):
@@ -271,7 +283,7 @@ def _to_binary(time_slots):
 #     return output,slots
 
 
-access_list = read_file("slots_out4.txt")
+access_list = read_file("slots_out5.txt")
 
 out,slots = _to_binary(access_list)
 print(slots)
@@ -319,14 +331,17 @@ def check_list(arr):
 
 
 
-# Focus on last element in the list_out
-best = "".join(list_out[len(list_out)-1])
-check_list(list_out[len(list_out)-1])
+# Focus on specific element in the list_out
+print("First element of list out ----")
+element_ndx = len(list_out)-1
+best = "".join(list_out[element_ndx])
+# check_list(list_out[len(list_out)-1])
 lcs_indices = pylcs.lcs_string_idx(d_p, best) # indices of spy out
 d_p_indices = pylcs.lcs_string_idx(best, d_p) #Indices of d_p
+print(lcs_indices)
 
 # get the strings after
-print("LASSSSST")
+
 
 
 spy_after = best[max(lcs_indices)+1:]
@@ -337,7 +352,7 @@ print(f"length of spy after {len(spy_after)}")
 print("------------------------------")
 print(d_p_after)
 
-print(f"LCS of after the 69 {pylcs.lcs_string_length(spy_after, d_p_after)}")
+print(f"LCS of after:  {pylcs.lcs_string_length(spy_after, d_p_after)}")
 
 
 ######################################################################################

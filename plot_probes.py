@@ -10,7 +10,7 @@ sqr = []
 mul = []
 div = []
 
-with open('slots_out4.txt') as f:
+with open('slots_out5.txt') as f:
     i =1
     for line in f:
         cols = line.split(',')
