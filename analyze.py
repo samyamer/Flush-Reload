@@ -14,32 +14,20 @@ def read_file(file):
 
         for line in f:
             line_arr = line.split(',')
-            if(i==36):
-                print(line_arr)
-            i+=1
+            # if(i==36):
+            #     print(line_arr)
+            # i+=1
             access_list.append([int(x) for x in line_arr])
 
     return [Access(i) for i in access_list]
 
-
-
 def _to_binary(time_slots):
-    # We're building a state machine here
     START = 0
     AFTER_SQUARE = 1
     AFTER_SQUARE_MOD = 2
     AFTER_MULTIPLY = 3
     AFTER_SQUARE_MOD_EMPTY = 5
 
-    current_state = START
-    output = []
-    modulo_count = 0
-    zero_count = 0
-    one_count = 0
-    slots = []
-    start = 1
-    end = 1
-    saw_mul = -1
 
     total_all_miss =0
     num_square = 0
@@ -47,22 +35,32 @@ def _to_binary(time_slots):
     num_mul  = 0
     empty = False
     all_miss = 0
-    for time_slot in time_slots:
 
+    start = 1
+    end = 1
+    current_state = START
+    output = []
+    slots = []
+    for time_slot in time_slots:
         square = time_slot.sqr
         multiply = time_slot.mul
         div = time_slot.div
 
+        if(square):
+            num_square +=1
+        if(multiply):
+            num_mul +=1
+        if(div):
+            num_div +=1
+
         empty = False
         if(not square and not multiply and not div):
-            # print(f"All miss at {end}")
             all_miss+=1
             total_all_miss +=1
             empty = True
         else:
             all_miss = 0
 
-        # If 10 or more continous all misses, this is probably a gap
         if(all_miss >=10):
             output.append("?")
             current_state = START
@@ -72,87 +70,212 @@ def _to_binary(time_slots):
             all_miss = 0
             continue
 
-
         if current_state == START:
-            if square:
-                num_square +=1
-                if(num_square > 3):
-                    current_state = AFTER_SQUARE
-                    num_square=0
-            if multiply:
-                current_state = AFTER_MULTIPLY
-                saw_mul = end
-
-
-        elif current_state == AFTER_SQUARE:
-            if(div):
-                num_div +=1
-                if(num_div >=3):
-                    num_div=0
-                    current_state = AFTER_SQUARE_MOD
-
-
-            if multiply:
-                current_state = AFTER_MULTIPLY
-                # print(f"Multiply at {end}: {time_slot.values}")
-                # print("Multiply after square!!")
-                saw_mul = end
-
-        elif current_state == AFTER_SQUARE_MOD:
-            if div:
-                num_div +=1
-
-            if multiply:
-                current_state = AFTER_MULTIPLY
-                print(f"Multiply at {end}: {time_slot.values}")
-                saw_mul = end
-                # output.append('_')
-
-            # If we see a square, return to start and output a 0
-            elif square:
-                num_square +=1
-            if(num_square > 3 or (num_square>=1 and all_miss>3) ):
+            if(num_square>3):
                 current_state = AFTER_SQUARE
                 num_square=0
                 num_div=0
-                current_state = START
+                num_mul=0
+        elif current_state == AFTER_SQUARE:
+            if(num_div>=3 and num_mul==0):
+                current_state = AFTER_SQUARE_MOD
+                num_square=0
+                num_div=0
+                num_mul=0
+            elif(num_div>0 and num_mul > 0 and all_miss<5):
+                current_state = AFTER_MULTIPLY
+                num_square=0
+                num_div=0
+                num_mul=0
+        elif current_state == AFTER_SQUARE_MOD:
+            if(num_mul > 0):
+                current_state = AFTER_MULTIPLY
+                num_square=0
+                num_div=0
+                num_mul=0
+            # elif(num_square > 3 and num_div==0 and num_mul==0):
+            #     output.append('0')
+            #     current_state = AFTER_SQUARE
+            #     num_square=0
+            #     num_div=0
+            #     num_mul=0
+            #     slots.append((start,end,0))
+            #     start = end+1
+            elif(num_square > 2):
                 output.append('0')
+                current_state = AFTER_SQUARE
+                num_square=0
+                num_div=0
+                num_mul=0
                 slots.append((start,end,0))
                 start = end+1
-                zero_count+=1
-
 
         elif current_state == AFTER_MULTIPLY:
-            # If we see only a modulo, return to start and output a 1
-            # Alternatively, a missed slot could be a modulo
-            if div:
-                num_div +=1
-            if(num_div >=2 or all_miss>3):
-                num_div=0
+            if(num_square > 1):
+                output.append('?')
                 current_state = START
-                output.append('1')
-                slots.append((start,end,saw_mul,1))
+                num_square=0
+                num_div=0
+                num_mul=0
+                slots.append((start,end,"?"))
                 start = end+1
-                one_count +=1
-
-
+            if(num_div > 2):
+                output.append('1')
+                current_state = START
+                num_square=0
+                num_div=0
+                num_mul=0
+                slots.append((start,end,1))
+                start = end+1
         end+=1
 
-            # If we see a square so soon, this might be invalid
-            # elif square:
-            #     current_state = START
-            #     output.append('_')
-
-    # print(f"num 0s {zero_count}")
-    # print(f"num 1s {one_count}")
-    # # print(slots)
-    # print(f"all miss: {total_all_miss}")
     return output,slots
+
+
+
+# current_state = START
+
+# def _to_binary(time_slots):
+#     # We're building a state machine here
+#     START = 0
+#     AFTER_SQUARE = 1
+#     AFTER_SQUARE_MOD = 2
+#     AFTER_MULTIPLY = 3
+#     AFTER_SQUARE_MOD_EMPTY = 5
+
+#     current_state = START
+#     output = []
+#     modulo_count = 0
+#     zero_count = 0
+#     one_count = 0
+#     slots = []
+#     start = 1
+#     end = 1
+#     saw_mul = -1
+
+#     total_all_miss =0
+#     num_square = 0
+#     num_div = 0
+#     num_mul  = 0
+#     empty = False
+#     all_miss = 0
+#     for time_slot in time_slots:
+
+#         square = time_slot.sqr
+#         multiply = time_slot.mul
+#         div = time_slot.div
+
+#         empty = False
+#         if(not square and not multiply and not div):
+#             # print(f"All miss at {end}")
+#             all_miss+=1
+#             total_all_miss +=1
+#             empty = True
+#         else:
+#             all_miss = 0
+
+#         # If 10 or more continous all misses, this is probably a gap
+#         if(all_miss >=10):
+#             output.append("?")
+#             current_state = START
+#             slots.append((start,end,"?"))
+#             start = end+1
+#             end+=1
+#             all_miss = 0
+#             continue
+
+
+#         if current_state == START:
+#             if square:
+#                 num_square +=1
+#                 if(num_square > 3):
+#                     current_state = AFTER_SQUARE
+#                     num_square=0
+#             if multiply:
+#                 current_state = AFTER_MULTIPLY
+#                 saw_mul = end
+
+
+#         elif current_state == AFTER_SQUARE:
+#             if(div):
+#                 num_div +=1
+#                 if(num_div >=3):
+#                     num_div=0
+#                     current_state = AFTER_SQUARE_MOD
+
+
+#             if multiply:
+#                 current_state = AFTER_MULTIPLY
+#                 # print(f"Multiply at {end}: {time_slot.values}")
+#                 # print("Multiply after square!!")
+#                 saw_mul = end
+
+#         elif current_state == AFTER_SQUARE_MOD:
+#             if div:
+#                 num_div +=1
+
+#             if multiply:
+#                 current_state = AFTER_MULTIPLY
+#                 # print(f"Multiply at {end}: {time_slot.values}")
+#                 saw_mul = end
+#                 # output.append('_')
+
+#             # If we see a square, return to start and output a 0
+#             elif square:
+#                 num_square +=1
+
+#             # if(num_div >=5 and all_miss>=7):
+#             #     current_state = START
+#             #     num_square=0
+#             #     num_div=0
+#             #     current_state = START
+#             #     output.append('?')
+#             #     slots.append((start,end,"?"))
+#             #     start = end+1
+#             if(num_square > 1 or (num_square>=1 and all_miss>3) ):
+#                 current_state = AFTER_SQUARE
+#                 num_square=0
+#                 num_div=0
+#                 current_state = START
+#                 output.append('0')
+#                 slots.append((start,end,0))
+#                 start = end+1
+#                 zero_count+=1
+
+
+#         elif current_state == AFTER_MULTIPLY:
+#             # If we see only a modulo, return to start and output a 1
+#             # Alternatively, a missed slot could be a modulo
+#             if div:
+#                 num_div +=1
+#             if(num_div >=2 or all_miss>3):
+#                 num_div=0
+#                 current_state = START
+#                 output.append('1')
+#                 slots.append((start,end,saw_mul,1))
+#                 start = end+1
+#                 one_count +=1
+
+
+#         end+=1
+
+#             # If we see a square so soon, this might be invalid
+#             # elif square:
+#             #     current_state = START
+#             #     output.append('_')
+
+#     # print(f"num 0s {zero_count}")
+#     # print(f"num 1s {one_count}")
+#     # # print(slots)
+#     # print(f"all miss: {total_all_miss}")
+#     return output,slots
 
 
 access_list = read_file("slots_out4.txt")
 
 out,slots = _to_binary(access_list)
+print(slots)
+print (out)
 # print(out)
 #print(_to_binary(read_file("slots_out3.txt")))
 
@@ -173,7 +296,7 @@ for char in out:
 list_out.append(element)
 # print(list_out)
 lenghs = [len(e) for e in list_out]
-print(slots)
+
 
 # print(list_out)
 # print(f"longest continous: {max(lenghs)}")
@@ -188,6 +311,8 @@ def check_list(arr):
     spy = "".join(arr)
     print(f"len of string is {len(spy)}")
     print(f"lcs with dp is {pylcs.lcs_string_length(spy, d_p)}")
+    print(f"lcs with dq is {pylcs.lcs_string_length(spy, d_q)}")
+
 
     return (spy in d_p) or (spy in d_q)
 
@@ -227,9 +352,9 @@ for i in spy_lcs_indices:
     print(slots[i])
 print()
 
-# exist = [check_list(e) for e in list_out]
+exist = [check_list(e) for e in list_out]
 
-# print(exist)
+print(exist)
 print(lenghs)
 
 
