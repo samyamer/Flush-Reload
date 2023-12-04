@@ -2,9 +2,18 @@
 
 
 # Results
-I measured success using the length of the longest common substring(LCS) bewteen the spy's output and d_p/d_q. I also calculate the probability of getting this LCS by pure luck.
-The best result I was able to achieve is a LCS of length 27 with d_p, with a probability of being pure luck of $3.7\*10^{-5}$. GPG signature was doing signatures in a loop in the background, so it is likely that the spy witnessed multiple signatures.
-See next section for details.
+Script was able to find an LCS of 119 bits with dp. However, this is only the LCS which is affected if only a single bit is off. By manual observation more than 200 bits of d_p have been recovered.
+
+
+# Analysis Script
+A script (adapted from [2])  parses through the attacker trace output and outputs a key based on the operation sequences. 
+
+# Spy
+Spy works in a manner similar to that of the paper. For N slots the 3 addresses are probed and the output is piped to a file. Further improvement needed to make the spy identify missed slots due to descheduling.
+
+
+
+
 
 # Validation of Attack
 Here I find a way to calculate the probability that the spy's output was just a lucky guess.
@@ -24,7 +33,7 @@ This means that the probability of an n-long substring randomly occuring in an m
 A perfect spy outputs the exact length of d_p or d_q with all the correct bits. n is equal to the length of d_p/d_q, since this is the longest common substring between the spy's output and d_p/d_q. Therefore m and n are equal, hence,
 $F = 1-(1-2^{-n}) =2^{-n}$, where n is the length of d_p/d_q. Since d_p/d_q has a length of 2046, $F =  2^{-2046}$ for this perfect spy.
 
-In the result I obtained the spy had an output of 5000 bits and a LCS of length 27, which means $F = 3.7\*10^{-5}$.
+(old)In the result I obtained the spy had an output of 5000 bits and a LCS of length 27, which means $F = 3.7\*10^{-5}$.
 
 # Sanity Checks
 To make sure I wasn't just seeing things I did two sanity checks.
